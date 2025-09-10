@@ -17,9 +17,10 @@ import { authenticateToken, refreshTokens } from './middlewares/auth-handler.mid
 //Database
 import { connectToDB } from './db/db';
 import clearUpRouter from './routes/clear-up.routes';
+import { PORT } from './constants/env';
 
 
-const PORT = 5000;
+
 const app = express();
 app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 app.use(express.urlencoded({ extended: true }));
@@ -40,5 +41,6 @@ export const database = (async () =>{
         app.listen(PORT, () => console.log(`Server runnig on port ${PORT}`));    
     return db;
 })();
+
 
 
