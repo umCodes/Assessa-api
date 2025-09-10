@@ -1,34 +1,27 @@
-# Use official Node.js 20 base image (Debian-based)
-FROM node:20
+# Use an official Node 18 LTS image
+FROM node:18-slim
 
-# Set working directory inside the container
+# Install system dependencies required by poppler & tesseract
+RUN apt-get update && apt-get install -y \
+    poppler-utils \
+    tesseract-ocr \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create app directory
 WORKDIR /app
 
-# Install system dependencies: poppler-utils (for pdftoppm) and tesseract-ocr
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-        poppler-utils \
-        tesseract-ocr \
-        && apt-get clean && rm -rf /var/lib/apt/lists/*
+# Install dependencies first (better caching)
+COPY package*.json ./
+RUN npm ci
 
-# Optional: Confirm pdftoppm location
-RUN which pdftoppm && pdftoppm -v || true
-
-# Copy package.json, package-lock.json (if exists), and patches folder BEFORE npm install
-COPY package*.json ./ 
-COPY patches ./patches
-
-# Install all dependencies (omit optional ones if not needed)
-RUN npm install 
-
-# Copy rest of the app files
+# Copy the rest of the source code
 COPY . .
 
-# Build the TypeScript project
+# Build TypeScript to dist/
 RUN npm run build
 
-# Expose the app port if needed (optional)
+# Expose port (Render sets PORT env anyway, but good practice)
 EXPOSE 3000
 
-# Start the app (runs dist/index.js)
-CMD ["npm", "start"]
+# Start the app
+CMD ["node", "dist/index.js"]
