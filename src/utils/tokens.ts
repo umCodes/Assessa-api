@@ -15,6 +15,7 @@ export async function storeTokensInCookies(res: Response, tokens: {access?: stri
         httpOnly: true,
         secure: true,
         sameSite: 'none',
+        domain: ".onrender.com",
         maxAge: 1000 * 60 * 60 * 24 * 7 //1 week
     });
 
@@ -23,8 +24,9 @@ export async function storeTokensInCookies(res: Response, tokens: {access?: stri
             httpOnly: true,
             secure: true,
             sameSite: 'none',
+            domain: ".onrender.com",
             maxAge: 1000 * 60 * 60 * 24 * 7 //1 week
-        });
+        }); 
         
         //Save referesh token in db
         const userBase = await getCollection('users');

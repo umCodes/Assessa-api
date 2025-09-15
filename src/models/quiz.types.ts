@@ -19,7 +19,8 @@ export type ClearUp = {
     created_at: string;
     type: "Clear-up";
     title: string;
-    number: number;
+    number: number
+    question_types: QuestionTypes[];
     generated_from: "image pdf" | "text pdf";
     credits: number;
     questions: Questions['questions'];

@@ -11,7 +11,6 @@ export interface CreditsRequest extends Request{
 }
 
 export async function processFile(req: CreditsRequest, res: Response, next: NextFunction){
-    req.body = JSON.parse(req.body.data);
     const { file, body } = req;
     const file_type = body.file_type as "image" | "text";
 

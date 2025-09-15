@@ -71,6 +71,7 @@ export async function clearUpPaper(req: AuthRequest & CreditsRequest, res: Respo
             created_at: new Date().toISOString(), // creation date
             title: file?.originalname || `Quiz-${Date.now()}`, // title
             generated_from: `${file_type as "image" | "text" } pdf`, // file type subject was extracted from 
+            question_types: qTypes,
             number: questions.length, // number of questions
             credits, // credits used for this process
             questions, // the actuall generated questions

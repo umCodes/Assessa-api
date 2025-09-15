@@ -14,6 +14,28 @@ import { llmApiKey, llmModels } from "../constants/env";
 
 
 
+export async function getTotalQuizzes(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+        const uid = String(req.user?.uid);
+
+        // Validate user
+        if (!uid) throw new HttpError('Unauthorized', 401);
+
+        // Get collection
+        const quizesCollection = await getCollection<Quiz>('quizHistories');
+        if (!quizesCollection) throw new HttpError('Collection not found', 404);
+
+        // Get total number of quizzes
+        const totalQuizzes = await quizesCollection.countDocuments({ uid });
+
+        res.json({ totalQuizzes });
+    } catch (error) {
+        console.log('🔴 Error fetching total quizzes at ./controllers/quiz.controllers.ts -> getTotalQuizzes(): ');
+        next(error);
+    }
+
+}
+
 export async function getQuizzes(req: AuthRequest, res: Response, next: NextFunction) {
     
     //Pagination 
@@ -35,7 +57,8 @@ export async function getQuizzes(req: AuthRequest, res: Response, next: NextFunc
         
         const length = await quizesCollection.countDocuments({uid}); //Number of User's Quizzes 
         const quizes = (await quizesCollection.find({uid}).sort({ _id: -1 })
-                        .skip(skip).limit(limit).toArray());  //Retrieve Paginated User's Quizzes   
+                        // .skip(skip).limit(limit)
+                        .toArray());  //Retrieve Paginated User's Quizzes   
         
         // 🟢 debbuging log
         // console.log(quizes, length, quizes.length);
@@ -122,7 +145,9 @@ export async function createQuiz(req: AuthRequest & CreditsRequest, res: Respons
     const { body } = req;
 
     const { subject, difficulty, file_type } = body
-    const qTypes = typeof body.qTypes === 'string' ?  JSON.parse(body.qTypes) as Quiz['question_types'] : body.qTypes;
+    const qTypes = JSON.parse(body.qTypes);
+    console.log('qTypes', qTypes);
+
     const number = Number(body.number) as Quiz['number'];
     try{    
         const uid = req.user?.uid;
@@ -130,8 +155,6 @@ export async function createQuiz(req: AuthRequest & CreditsRequest, res: Respons
         
     //Validate whether:
         //- Subject is valid
-        console.log(subject);
-        
         if(!subject || subject.length === 0) throw new HttpError('Subject is required', 400);        
         //- Difficulty level is valid
         if(!difficulty || !difficultyLevels.some(d => d === difficulty)) throw new HttpError('Invalid difficulty level', 400)

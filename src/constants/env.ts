@@ -6,7 +6,7 @@ export const signature = {
     refreshToken: String(process.env.REFRESH_TOKEN_SIGNATURE) 
 } 
 
-
+export const ORIGIN = process.env.ORIGIN;
 export const llmModels = {
     deepseek_r1: 'deepseek/deepseek-r1:free',
 

@@ -17,12 +17,12 @@ import { authenticateToken, refreshTokens } from './middlewares/auth-handler.mid
 //Database
 import { connectToDB } from './db/db';
 import clearUpRouter from './routes/clear-up.routes';
-import { PORT } from './constants/env';
+import { ORIGIN, PORT } from './constants/env';
 
 
 
 const app = express();
-app.use(cors({ origin: process.env.ORIGIN, credentials: true }));
+app.use(cors({ origin: ORIGIN, credentials: true }));
 app.use(express.urlencoded({ extended: true }));
 
 app.use(cookiePraser())
@@ -34,6 +34,7 @@ app.use('/api', clearUpRouter);
 app.use('/api', quizRouter)
 app.use('/', userRouter)
 app.use(errorHandler)
+
 
 export const database = (async () =>{
     const db = await connectToDB();

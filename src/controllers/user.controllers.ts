@@ -52,7 +52,7 @@ export async function sendFeedback(req: Request, res: Response, next: NextFuncti
   await transporter.sendMail({
     from: email,
     to: String(process.env.EMAIL),
-    subject: `KwizMe Feedback: ${subject} (from ${email})`,
+    subject: `ShoeBill Feedback: ${subject} (from ${email})`,
     text: message
   }).catch(err => next(err));
 
