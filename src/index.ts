@@ -22,6 +22,8 @@ import { ORIGIN, PORT } from './constants/env';
 
 
 const app = express();
+
+app.set('trust proxy', true);
 app.use(cors({ origin: ORIGIN, credentials: true }));
 app.use(express.urlencoded({ extended: true }));
 

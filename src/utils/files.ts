@@ -34,7 +34,7 @@ export async function parsePdf(file: Express.Multer.File | undefined){
 }
 
 
-export async function ocrScanPdf(file: Express.Multer.File | undefined){
+export async function ocrScanPdf(file: Express.Multer.File | undefined, isClearup: boolean){
     
     if(!file) throw new HttpError('No file uploaded', 400)
 
@@ -49,24 +49,27 @@ export async function ocrScanPdf(file: Express.Multer.File | undefined){
         //Read PDF pages
         const buffer = fs.readFileSync(filePath)
         const {numpages} = await pdf(buffer);
-        const pdfFilePages = 10;
+        const pdfFilePages = numpages > 10 && isClearup ? 10 : numpages;
         
         //Create the image pages folder
         fs.mkdirSync(imagesfolderPath)
     
         // Convert PDF → images    
         const poppler = new Poppler();
-        await poppler.pdfToCairo(filePath, imagesfolderPath + "/img" , { pngFile: true, lastPageToConvert: 10 })
+        await poppler.pdfToCairo(filePath, imagesfolderPath + "/img" , { pngFile: true, lastPageToConvert: pdfFilePages })
         
 
         //Loop through each image within the created images folder 
         let text = "";
         let promises = [];
 
+
         for(let i = 1; i <= pdfFilePages; i++){
 
             //Image path
             const ImagePath = `${imagesfolderPath}/img-${"0".repeat(digitCount(pdfFilePages) - digitCount(i)) + i.toString()}.png`
+            console.log(ImagePath);
+            
             //Extract text from image:
             const result = Tesseract.recognize(ImagePath, 'eng'); // To be awaited later in batch
             promises.push(result); // push promise to array

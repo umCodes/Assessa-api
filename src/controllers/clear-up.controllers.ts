@@ -46,7 +46,7 @@ export async function clearUpPaper(req: AuthRequest & CreditsRequest, res: Respo
 
     
         //Prompt subject(array of extracted text from file) to llm in parallel(sync) 
-        const request = subject.map((page: string) => ai.models.generateContent({
+        const request = subject.slice(0, 10).map((page: string) => ai.models.generateContent({
             model: "gemini-2.0-flash",
             contents: clearUpPrompt({
                             subject: page,
@@ -57,12 +57,17 @@ export async function clearUpPaper(req: AuthRequest & CreditsRequest, res: Respo
         
         //Await all the llm responses in parallel
         const response = await Promise.all(request);
-        const questions = response.flatMap(q => {
+        const questions = response.flatMap(q => {            
             //declutter llm response and parse it into a valid json
             const string = String(q.text).replaceAll('`', '').replaceAll('\n', '').replace('json', '');            
             const parsed = JSON.parse(string)            
             return parsed.questions;
         })
+
+        
+        if(questions.length <= 0) throw new HttpError("Something went wrong", 400)
+
+
 
         //Set up clear up
         const clearUp: ClearUp = {

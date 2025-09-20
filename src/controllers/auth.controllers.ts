@@ -9,7 +9,11 @@ import { initialCredits } from "../constants/credits.constants";
 import { UserPayload } from "../models/jwt.types";
 import { User } from "../models/user.types";
 import { clearDBRefreshToken, storeTokensInCookies } from "../utils/tokens";
+import crypto from 'crypto';
 
+function hashIP(ip: string) {
+  return crypto.createHash('sha256').update(ip).digest('hex');
+}
 
 
 export async function signUp(req: Request, res: Response, next: NextFunction){

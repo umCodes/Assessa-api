@@ -1,6 +1,7 @@
 import { GoogleGenAI } from "@google/genai";
 import { ClearUpPrompt, QuizPrompt } from '../models/quiz.types';
 import { geminiApiKey } from "../constants/env";
+import { HttpError } from "../errors/http-error";
 
 
 
@@ -16,6 +17,10 @@ export async function generateQuizFromLlm(content: QuizPrompt){
         });
         const response = String(request.text).replaceAll('`', '').replace('json', '')
         
+        console.log(response);
+        
+        if("status" in JSON.parse(response)) throw new HttpError("Invalid file content", 400)
+        
         return JSON.parse(response)
     }catch(error){
         console.log('🔴 Error generating quiz at ./utils/llm.ts -> generateQuizFromLlm(): ');
@@ -24,24 +29,21 @@ export async function generateQuizFromLlm(content: QuizPrompt){
     
 }
 
-
-function quizPrompt({ subject, qTypes, difficulty, number, prev}: QuizPrompt): string {
-
-     return `
+function quizPrompt({ subject, qTypes, difficulty, number, prev }: QuizPrompt): string {
+    return `
         Generate a quiz in JSON using the format below. No extra text, just a JSON object (type Questions).
             Rules:
                 Stick to topic if subject is long;
                 Strict rule: The number of questions returned must always be exactly equal to the ${number}, no less.
 
-                 If subject is a query, prompt, command, or anything similar, return this as a JSON:
+                If the input is not an academic topic, an essay, book, lecture note, or any written text discussing a topic (for example: an exam paper, non-educational content, very vague and unclear topic and discussion , a casual query, command, or general conversation), return:
                     { "status": "error", "message": "Invalid entry." } and ignore the below part of the prompt
 
-                If difficulty is unreasonable for subject, return this as a JSON:
-                    { "status": "error", "message": "Difficultly level doesn't match subject." } and ignore the below part of the prompt
+                If difficulty is unreasonable for subject, return:
+                    { "status": "error", "message": "Difficulty level doesn't match subject." } and ignore the below part of the prompt
 
-                else If subject is an abbreviation, vague, conversational, general, or non-educational:
+                Else if subject is an abbreviation, vague, conversational, general, or non-educational:
                     { "status": "error", "message": "Subject too abstract or general, please enter a more specified value." } and ignore the below part of the prompt
-
 
                 Difficulty levels:
                     Basic: recall/definitions
@@ -49,7 +51,6 @@ function quizPrompt({ subject, qTypes, difficulty, number, prev}: QuizPrompt): s
                     Intermediate: reasoning/application
                     Advanced: deep/multi-step
                     Expert: tricky/problem-solving            
-
 
                 Output Types:
                 type MCQ = {
@@ -64,11 +65,10 @@ function quizPrompt({ subject, qTypes, difficulty, number, prev}: QuizPrompt): s
                     question: string;
                     options: [{ answer: boolean; correct: boolean }, { answer: boolean; correct: boolean }];
                     explanation: string;
-
                 };
 
                 export type SAQ = {
-                    type: "SAQ";   // can be long answer question too
+                    type: "SAQ";   
                     question: string;
                     answers: string;
                     explanation: string;
@@ -81,10 +81,9 @@ function quizPrompt({ subject, qTypes, difficulty, number, prev}: QuizPrompt): s
                     explanation: string;
                 };
 
-
                 type Questions = { 
                     topic: string;
-                    questions: (MCQ | TF)[];
+                    questions: (MCQ | TF | SAQ | FIB)[];
                 }
 
                 type QuizError = {
@@ -99,7 +98,7 @@ function quizPrompt({ subject, qTypes, difficulty, number, prev}: QuizPrompt): s
                 difficulty: "${difficulty}"
                 number of questions: ${number} // Strictly generate exactly this many questions, no less.
                 question types: ${qTypes.join(', ')}
-            `;
+    `;
 }
 
 
@@ -107,15 +106,19 @@ function quizPrompt({ subject, qTypes, difficulty, number, prev}: QuizPrompt): s
 //CLEAR UPS 
 
 export function clearUpPrompt({ subject, qTypes, prev }: ClearUpPrompt): string {
-
     return `
-        You are processing extracted exam paper text.
+        You are processing extracted exam paper, quiz, or query text.
 
         INPUT TEXT:
         ${subject}
 
         PREVIOUSLY EXTRACTED QUESTIONS:
         ${prev}
+
+        RULE: 
+        - If the input is not an exam paper, quiz, or academic query, return:
+            { "status": "error", "message": "Invalid input: input must be an exam paper, quiz, or academic query." }
+          and do not process further.
 
         TASK:
         - Clean and parse the input.
@@ -149,7 +152,7 @@ export function clearUpPrompt({ subject, qTypes, prev }: ClearUpPrompt): string 
         { "questions": [ ... ] }
 
         NO extra text, no comments, no code fences. Output must be valid JSON.
-`;
+    `;
 }
 
 

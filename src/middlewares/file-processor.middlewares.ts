@@ -22,9 +22,10 @@ export async function processFile(req: CreditsRequest, res: Response, next: Next
         const buffer = fs.readFileSync(file.path)
         const {numpages} = await pdf(buffer);
 
+
         let subject: string[] = [];
         if(file_type === "image") {
-            subject = await ocrScanPdf(file)
+            subject = await ocrScanPdf(file, req.path === "/clearup")
             req.credits = Number((creditsPerPage.imagePDF * numpages).toFixed(2))
         }
         if(file_type === "text") {            
