@@ -4,12 +4,6 @@ import { geminiApiKey, openRouterApiKey } from "../constants/env";
 import { HttpError } from "../errors/http-error";
 import { quizPrompt } from "./prompts";
 
-import { OpenRouter } from "@openrouter/sdk";
-
-const openrouter = new OpenRouter({
-  apiKey: openRouterApiKey
-});
-
 export const ai = new GoogleGenAI({ apiKey: geminiApiKey });
 
 
