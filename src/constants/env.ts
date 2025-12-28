@@ -18,7 +18,7 @@ export const tokenAge = {
 
 
 export const PORT = Number(process.env.PORT); 
-export const llmApiKey = String(process.env.OPEN_ROUTER_API_KEY); 
+export const openRouterApiKey = String(process.env.OPEN_ROUTER_API_KEY); 
 export const geminiApiKey = String(process.env.GEMINI_API_KEY); 
 export const mongoURI = String(process.env.MONGO_URI)
 export const mongoDBName = String(process.env.MONGO_DB_NAME)
