@@ -25,7 +25,9 @@ export async function generateQuizFromLlm(content: QuizPrompt) {
       }
     );
 
+    
     const data = await httpResponse.json();
+    console.log(data)
     const rawContent = data.choices[0].message.content;
 
     const cleanedJson = String(rawContent)
