@@ -22,7 +22,6 @@
   },
   "dependencies": {
     "@google/genai": "^1.15.0",
-    "@openrouter/sdk": "0.0.0-beta.39",
     "@types/bcrypt": "^6.0.0",
     "@types/cookie-parser": "^1.4.9",
     "@types/cors": "^2.8.19",
