@@ -1,10 +1,14 @@
 import { GoogleGenAI } from "@google/genai";
 import { ClearUpPrompt, QuizPrompt } from '../models/quiz.types';
-import { geminiApiKey } from "../constants/env";
+import { geminiApiKey, openRouterApiKey } from "../constants/env";
 import { HttpError } from "../errors/http-error";
 import { quizPrompt } from "./prompts";
 
+import { OpenRouter } from "@openrouter/sdk";
 
+const openrouter = new OpenRouter({
+  apiKey: openRouterApiKey
+});
 
 export const ai = new GoogleGenAI({ apiKey: geminiApiKey });
 
@@ -12,11 +16,19 @@ export const ai = new GoogleGenAI({ apiKey: geminiApiKey });
 //QUIZZES
 export async function generateQuizFromLlm(content: QuizPrompt){
     try{
-        const request = await ai.models.generateContent({
-            model: "gemini-2.0-flash",
-            contents: quizPrompt(content),
-        });
-        const response = String(request.text).replaceAll('`', '').replace('json', '')
+
+
+        const request = await openrouter.chat.send({
+              model: "google/gemini-2.5-flash",
+              messages: quizPrompt(content),
+          });
+        
+        // const request = await ai.models.generateContent({
+        //     model: "gemini-2.0-flash",
+        //     contents: quizPrompt(content),
+        // });
+        const res = request.choices[0].message.content
+        const response = String(res.text).replaceAll('`', '').replace('json', '')
         
         console.log(response);
         
