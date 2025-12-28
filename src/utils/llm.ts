@@ -12,7 +12,7 @@ export async function generateQuizFromLlm(content: QuizPrompt){
     try{
 
 
-        const request = await const response = await fetch(
+        const request = await fetch(
                 "https://openrouter.ai/api/v1/chat/completions",
                 {
                   method: "POST",
