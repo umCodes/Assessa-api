@@ -8,43 +8,77 @@ export const ai = new GoogleGenAI({ apiKey: geminiApiKey });
 
 
 //QUIZZES
-export async function generateQuizFromLlm(content: QuizPrompt){
-    try{
+export async function generateQuizWithLLM(content: QuizPrompt) {
+  try {
+    const httpResponse = await fetch(
+      "https://openrouter.ai/api/v1/chat/completions",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${openRouterApiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "google/gemini-2.5-flash",
+          messages: quizPrompt(content),
+        }),
+      }
+    );
 
+    const data = await httpResponse.json();
+    const rawContent = data.choices[0].message.content;
 
-        const request = await fetch(
-                "https://openrouter.ai/api/v1/chat/completions",
-                {
-                  method: "POST",
-                  headers: {
-                    "Authorization": `Bearer ${openRouterApiKey}`,
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify({
-                    model: "google/gemini-2.5-flash",
-                    messages: quizPrompt(content),
-                  }),
-                }
-              );
-        console.log(request)
-        // const request = await ai.models.generateContent({
-        //     model: "gemini-2.0-flash",
-        //     contents: quizPrompt(content),
-        // });
-        const res = request.choices[0].message.content
-        const response = String(res.text).replaceAll('`', '').replace('json', '')
-        
-        console.log(response);
-        
-        // if("status" in JSON.parse(response)) throw new HttpError("Invalid file content", 400)
-        
-        return JSON.parse(response)
-    }catch(error){
-        console.log('🔴 Error generating quiz at ./utils/llm.ts -> generateQuizFromLlm(): ');
-        throw error
-    }
-    
+    const cleanedJson = String(rawContent)
+      .replaceAll("`", "")
+      .replace("json", "");
+
+    return JSON.parse(cleanedJson);
+  } catch (error) {
+    console.error(
+      "🔴 Error generating quiz at ./utils/llm.ts -> generateQuizWithLLM()"
+    );
+    throw error;
+  }
 }
+
+
+// export async function generateQuizFromLlm(content: QuizPrompt){
+//     try{
+
+
+//         const request = await fetch(
+//                 "https://openrouter.ai/api/v1/chat/completions",
+//                 {
+//                   method: "POST",
+//                   headers: {
+//                     "Authorization": `Bearer ${openRouterApiKey}`,
+//                     "Content-Type": "application/json",
+//                   },
+//                   body: JSON.stringify({
+//                     model: "google/gemini-2.5-flash",
+//                     messages: quizPrompt(content),
+//                   }),
+//                 }
+//               );
+//         console.log(request)
+//         // const request = await ai.models.generateContent({
+//         //     model: "gemini-2.0-flash",
+//         //     contents: quizPrompt(content),
+//         // });
+//         const res = request.choices[0].message.content
+//         const response = String(res.text).replaceAll('`', '').replace('json', '')
+        
+//         console.log(response);
+        
+//         // if("status" in JSON.parse(response)) throw new HttpError("Invalid file content", 400)
+        
+//         return JSON.parse(response)
+//     }catch(error){
+//         console.log('🔴 Error generating quiz at ./utils/llm.ts -> generateQuizFromLlm(): ');
+//         throw error
+//     }
+    
+// }
 
 // function quizPrompt({ subject, qTypes, difficulty, number, prev }: QuizPrompt): string {
 //     return `
