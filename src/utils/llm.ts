@@ -35,8 +35,7 @@ export async function generateQuizFromLlm(content: QuizPrompt) {
     return JSON.parse(cleanedJson);
   } catch (error) {
     console.error(
-      "🔴 Error generating quiz at ./utils/llm.ts -> generateQuizWithLLM()"
-    );
+      "🔴 Error generating quiz at ./utils/llm.ts -> generateQuizWithLLM()", error);
     throw error;
   }
 }
