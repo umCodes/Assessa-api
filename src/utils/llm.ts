@@ -19,7 +19,7 @@ export async function generateQuizFromLlm(content: QuizPrompt) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "deepseek/deepseek-r1:free",
+          model: "qwen/qwen-2.5-72b-instruct",
           messages: [
             {
               role: "user",
