@@ -20,7 +20,12 @@ export async function generateQuizFromLlm(content: QuizPrompt) {
         },
         body: JSON.stringify({
           model: "google/gemini-2.5-flash",
-          messages: quizPrompt(content),
+          messages: [
+            {
+              role: "user",
+              content: quizPrompt(content)
+            }
+          ],
         }),
       }
     );
