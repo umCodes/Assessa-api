@@ -32,7 +32,7 @@ export async function generateQuizFromLlm(content: QuizPrompt){
         
         console.log(response);
         
-        if("status" in JSON.parse(response)) throw new HttpError("Invalid file content", 400)
+        // if("status" in JSON.parse(response)) throw new HttpError("Invalid file content", 400)
         
         return JSON.parse(response)
     }catch(error){
