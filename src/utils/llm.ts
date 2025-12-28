@@ -8,7 +8,7 @@ export const ai = new GoogleGenAI({ apiKey: geminiApiKey });
 
 
 //QUIZZES
-export async function generateQuizWithLLM(content: QuizPrompt) {
+export async function generateQuizFromLlm(content: QuizPrompt) {
   try {
     const httpResponse = await fetch(
       "https://openrouter.ai/api/v1/chat/completions",
