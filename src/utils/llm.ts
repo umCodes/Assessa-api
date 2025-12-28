@@ -19,7 +19,7 @@ export async function generateQuizFromLlm(content: QuizPrompt) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "google/gemini-2.0-flash-exp:free",
+          model: "openai/gpt-oss-120b:free",
           messages: [
             {
               role: "user",
