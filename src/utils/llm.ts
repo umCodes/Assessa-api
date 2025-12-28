@@ -18,11 +18,21 @@ export async function generateQuizFromLlm(content: QuizPrompt){
     try{
 
 
-        const request = await openrouter.chat.send({
-              model: "google/gemini-2.5-flash",
-              messages: quizPrompt(content),
-          });
-        
+        const request = await const response = await fetch(
+                "https://openrouter.ai/api/v1/chat/completions",
+                {
+                  method: "POST",
+                  headers: {
+                    "Authorization": `Bearer ${openRouterApiKey}`,
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    model: "google/gemini-2.5-flash",
+                    messages: quizPrompt(content),
+                  }),
+                }
+              );
+        console.log(request)
         // const request = await ai.models.generateContent({
         //     model: "gemini-2.0-flash",
         //     contents: quizPrompt(content),
