@@ -10,7 +10,7 @@ import { creditsPerQuestion } from "../constants/credits.constants";
 import { subtractUserCredits } from "../utils/credits";
 import { ObjectId } from "mongodb";
 import { User } from "../models/user.types";
-import { llmApiKey, llmModels } from "../constants/env";
+import { openRouterApiKey, llmModels } from "../constants/env";
 // import { rm, mkdir } from "fs/promises";
 // import path from "path";
 
@@ -285,7 +285,7 @@ export async function checkQuestionAnswer(req: AuthRequest & CreditsRequest, res
                 const request = await fetch('https://openrouter.ai/api/v1/chat/completions', {
                 method: 'POST',
                 headers: {
-                    Authorization: `Bearer ${llmApiKey}`,
+                    Authorization: `Bearer ${openRouterApiKey}`,
                     'Content-Type': 'application/json',
                 },
                 
