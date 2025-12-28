@@ -21,8 +21,8 @@ import { ORIGIN, PORT } from './constants/env';
 
 
 
-import { createWorker } from 'tesseract.js';
-import path from 'path';
+// import { createWorker } from 'tesseract.js';
+// import path from 'path';
 
 // (async () => {
 //     const worker = await createWorker(); // specify language (English)
