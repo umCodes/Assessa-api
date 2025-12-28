@@ -19,7 +19,7 @@ export async function generateQuizFromLlm(content: QuizPrompt) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "openai/gpt-oss-120b:free",
+          model: "deepseek/deepseek-r1:free",
           messages: [
             {
               role: "user",
