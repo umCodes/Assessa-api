@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import fs from 'fs';
+import fs from 'fs/promises';
 import pdf from 'pdf-parse'
 
 
@@ -14,14 +14,14 @@ export async function getPages(req: Request, res: Response, next: NextFunction) 
         }
         //Read File's Content
         const filePath = req.file.path;
-        const file = fs.readFileSync(filePath);
+        const file = fs.readFile(filePath);
         //Read Pdf Content
         const { numpages } = await pdf(file);
         //return number of pages 
         res.status(200).json({
             pages: numpages
         })         
-        fs.unlinkSync(filePath); 
+        fs.unlink(filePath); 
         return;
     }catch(error){
         console.error('🔴 Error getting pages at ./controllers/file.controllers.ts -> getPages(): ', error);
