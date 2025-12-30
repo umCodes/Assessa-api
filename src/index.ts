@@ -20,6 +20,8 @@ import clearUpRouter from './routes/clear-up.routes';
 import { ORIGIN, PORT } from './constants/env';
 
 //Cron
+import { startRefreshCron } from "./cron/refreshServer";
+
 const app = express();
 
 startRefreshCron();
