@@ -1,5 +1,4 @@
 import cron from "node-cron";
-import fetch from "node-fetch";
 
 const SERVER_URL = process.env.SERVER_URL!;
 
