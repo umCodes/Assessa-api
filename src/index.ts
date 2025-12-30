@@ -19,26 +19,10 @@ import { connectToDB } from './db/db';
 import clearUpRouter from './routes/clear-up.routes';
 import { ORIGIN, PORT } from './constants/env';
 
-
-
-// import { createWorker } from 'tesseract.js';
-// import path from 'path';
-
-// (async () => {
-//     const worker = await createWorker(); // specify language (English)
-//     await worker.loadLanguage('eng');
-//     await worker.initialize('eng');
-
-//     const imagePath = path.join( __dirname, "../", "/uploads", 'images.png');
-//     const { data: { text } } = await worker.recognize(imagePath);
-//     console.log(text);
-
-//     await worker.terminate()
-// });
-
-
-
+//Cron
 const app = express();
+
+startRefreshCron();
 
 app.set('trust proxy', true);
 app.use(cors({ origin: ORIGIN, credentials: true }));
