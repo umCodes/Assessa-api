@@ -19,7 +19,7 @@ export async function getPages(req: Request, res: Response, next: NextFunction) 
         const data = await pdf(file);
         //return number of pages 
         res.status(200).json({
-            pages: data.text.split(/\f/).length
+            pages: data.numpages
         })         
         await fs.unlink(filePath); 
         return;
