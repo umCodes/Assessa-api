@@ -16,10 +16,10 @@ export async function getPages(req: Request, res: Response, next: NextFunction) 
         const filePath = req.file.path;
         const file = await fs.readFile(filePath);
         //Read Pdf Content
-        const { numpages } = await pdf(file);
+        const data = await pdf(file);
         //return number of pages 
         res.status(200).json({
-            pages: numpages
+            pages: data.text.split(/\f/).length;
         })         
         await fs.unlink(filePath); 
         return;
