@@ -168,23 +168,8 @@ docker build -t shoebill-ai:latest .
 docker run -p 3000:3000 --env-file .env shoebill-ai:latest
 ```
 
-Note: OCR with `tesseract.js` and `node-poppler` may require additional system libs depending on your base image.
 
 
-## Security and reliability notes
-
-- Never commit `.env` or secrets
-- Validate uploaded files and sizes; clean `uploads/` regularly
-- Enforce CORS via `ORIGIN`
-- Fail fast on missing env vars and DB connection issues
-
-
-## Troubleshooting
-
-- 401 Unauthorized: ensure auth cookies are present and valid
-- 402 Insufficient Credits: top up or reduce request size/questions
-- 400 on PDF parsing: confirm PDF is readable (for OCR use `file_type=image`)
-- OCR is slow: large scans are CPU‑intensive; consider page limits and queues
 
 
 ### License
