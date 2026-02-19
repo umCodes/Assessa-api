@@ -29,7 +29,7 @@ An AI-powered quiz generation and paper clean‑up API. Upload PDFs (text or sca
 - TypeScript
 
 
-## Architecture (high level)
+## Architecture
 
 - `src/index.ts` wires Express, CORS, cookies, auth middleware, routes, and DB connection
 - `src/controllers/*` implement auth, file, quiz, clear‑up, and user handlers
