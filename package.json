@@ -45,9 +45,9 @@
     "node-poppler": "^8.0.4",
     "nodemailer": "^7.0.5",
     "p-limit": "^3.1.0",
-    "pdf-parse": "^1.1.1",
+    "pdf-parse": "^1.1.4",
     "pdf-poppler": "^0.2.1",
     "rimraf": "^6.0.1",
-    "tesseract.js": "^4.1.1"
+    "tesseract.js": "^4.1.4"
   }
 }

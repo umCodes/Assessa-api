@@ -6,9 +6,9 @@ import { CreditsRequest } from "../middlewares/file-processor.middlewares";
 import { getCollection } from "../db/db";
 import { User } from "../models/user.types";
 import { ObjectId } from "mongodb";
-import { ai } from "../utils/llm";
 import { subtractUserCredits } from "../utils/credits";
 import { clearUpPrompt } from "../utils/prompts";
+import { promptLlm } from "../services/llm-api";
 
 
 
@@ -47,20 +47,20 @@ export async function clearUpPaper(req: AuthRequest & CreditsRequest, res: Respo
 
     
         //Prompt subject(array of extracted text from file) to llm in parallel(sync) 
-        const request = subject.slice(0, 10).map((page: string) => ai.models.generateContent({
-            model: "gemini-2.0-flash",
-            contents: clearUpPrompt({
+        const request = subject.slice(0, 10).map((page: string) => 
+            promptLlm(
+                clearUpPrompt({
                             subject: page,
                             qTypes,
                             prev: ''
                         }),
-        }))
-        
+        ))
+
         //Await all the llm responses in parallel
         const response = await Promise.all(request);
         const questions = response.flatMap(q => {            
             //declutter llm response and parse it into a valid json
-            const string = String(q.text).replaceAll('`', '').replaceAll('\n', '').replace('json', '');            
+            const string = String(q).replaceAll('`', '').replaceAll('\n', '').replace('json', '');            
             const parsed = JSON.parse(string)            
             return parsed.questions;
         })
