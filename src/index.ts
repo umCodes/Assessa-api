@@ -17,7 +17,7 @@ import { authenticateToken, refreshTokens } from './middlewares/auth-handler.mid
 //Database
 import { connectToDB } from './db/db';
 import clearUpRouter from './routes/clear-up.routes';
-import { ORIGIN, PORT } from './constants/env';
+import { NODE_ENV, ORIGIN, PORT } from './constants/env';
 
 //Cron
 import { startRefreshCron } from "./cron/refreshServer";
@@ -26,7 +26,7 @@ const app = express();
 
 startRefreshCron();
 
-app.set('trust proxy', true);
+if (NODE_ENV === 'production') app.set('trust proxy', true);
 app.use(cors({ origin: ORIGIN, credentials: true }));
 app.use(express.urlencoded({ extended: true }));
 
