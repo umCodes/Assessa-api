@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { ObjectId } from "mongodb";
 
-import { maxNumOfQuestions, minNumOfQuestions } from "../constants/constriants.constants";
+import { MAX_NUM_OF_QUESTIONS, MIN_NUM_OF_QUESTIONS } from "../constants/constriants.constants";
 import { creditsPerQuestion } from "../constants/credits.constants";
 import { openRouterApiKey, llmModels } from "../constants/env";
 
@@ -174,7 +174,7 @@ export async function createQuiz(
             throw new HttpError("Invalid question types", 400);
         if (!number || isNaN(number))
             throw new HttpError("Number of questions is required", 400);
-        if (number > maxNumOfQuestions || number < minNumOfQuestions)
+        if (number > MAX_NUM_OF_QUESTIONS || number < MIN_NUM_OF_QUESTIONS)
             throw new HttpError("Invalid number of questions", 400);
         if (typeof req.credits !== "number")
             throw new HttpError("Something went wrong, please try again.", 500);
