@@ -7,22 +7,24 @@ import { getCollection } from "../db/db";
 import { ObjectId } from "mongodb";
 import { UserPayload } from "../models/jwt.types";
 import { User } from "../models/user.types";
+import { NODE_ENV } from "../constants/env";
 
 export async function storeTokensInCookies(res: Response, tokens: {access?: string, refresh?: string}, uid: string){
     //Send tokens to client in cookies
+    const isProd = NODE_ENV === "production"
     if(tokens?.access)
     res.cookie("access-token", tokens.access, {
         httpOnly: true,
-        secure: true,
-        sameSite: 'none',
+        secure: isProd,
+        sameSite: isProd ? 'none' : 'lax',
         maxAge: 1000 * 60 * 60 * 24 * 7 //1 week
     });
 
     if(tokens?.refresh){
         res.cookie("refresh-token", tokens.refresh, {
             httpOnly: true,
-            secure: true,
-            sameSite: 'none',
+            secure:  isProd,
+            sameSite: isProd ? 'none' : 'lax',
             maxAge: 1000 * 60 * 60 * 24 * 7 //1 week
         }); 
         
@@ -32,7 +34,7 @@ export async function storeTokensInCookies(res: Response, tokens: {access?: stri
         const user = await userBase.findOne({_id: new ObjectId(uid)});
         if(!user) throw new HttpError('User not found', 404);
         await userBase.updateOne(
-            { _id: new ObjectId(uid) }, 
+            { _id: new ObjectId(uid)}, 
             { $push: { refreshTokens: hashToken(tokens.refresh, signatures.tokensStorage) } }
         );
     }
