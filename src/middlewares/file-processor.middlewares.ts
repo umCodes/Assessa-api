@@ -1,9 +1,11 @@
 import { Request, Response, NextFunction } from "express";
-import { ocrScanPdf, parsePdf } from "../utils/files";
+import {parsePdf } from "../utils/files";
 import pdf from "pdf-parse";
 import fs from "fs";
 import { HttpError } from "../errors/http-error";
 import { creditsPerPage } from "../constants/credits.constants";
+import { readFile } from "fs/promises";
+import { ocrScan } from "../utils/ocr";
 
 
 export interface CreditsRequest extends Request{
@@ -21,7 +23,7 @@ export async function processFile(req: CreditsRequest, res: Response, next: Next
 
         console.log(body);
         
-        const buffer = fs.readFileSync(file.path)
+        const buffer = await readFile(file.path)
         const {numpages} = await pdf(buffer);
 
 
@@ -29,20 +31,25 @@ export async function processFile(req: CreditsRequest, res: Response, next: Next
         console.log(req.path);
         
         if(file_type === "image" && req.path === "/clearup") {
-            subject = await ocrScanPdf(file);
+            console.log(file);
+            console.log(file.path);
+            subject = await ocrScan(file.path);
             req.credits = Number((creditsPerPage.imagePDF * numpages).toFixed(2))
         }
 
-        if(file_type === "text") {            
+        if(file_type === "text") {        
             subject = await parsePdf(file)
             req.credits = Number((creditsPerPage.textPDF * numpages).toFixed(2))
 
         }
 
-        if (subject.length === 0) throw new HttpError('No text extracted from file.', 400);
+        if (subject.length === 0) 
+            throw new HttpError('No text extracted from file.', 400);
+        
         req.body.subject = subject;
         return next()
     }catch(error){
-        return next(error);
+        if (error instanceof HttpError) return next(error);
+        else return next(new HttpError('An error occurred while processing the file.', 500))
     }
 }
