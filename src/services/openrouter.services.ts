@@ -1,5 +1,5 @@
 import { OpenRouter } from "@openrouter/sdk";
-import { type ChatResult, type ChatRequest } from "@openrouter/sdk/esm/models";
+import { type ChatResult, type ChatRequest } from "@openrouter/sdk/models";
 import { encodeImageToBase64 } from "../utils/images";
 import { openRouterApiKey } from "../constants/env";
 
