@@ -2,7 +2,6 @@ import {MongoClient, ObjectId} from 'mongodb';
 import { mongoDBName, mongoURI } from '../utils/env';
 import { database } from '..';
 
-
 const client = new MongoClient(mongoURI);
 
 export async function connectToDB(){

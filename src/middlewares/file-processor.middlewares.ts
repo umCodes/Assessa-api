@@ -6,6 +6,8 @@ import { HttpError } from "../errors/http-error";
 import { creditsPerPage } from "../constants/credits.constants";
 import { readFile } from "fs/promises";
 import { ocrScan } from "../utils/ocr";
+import { processImg as geminiProcessImg } from "../services/gemini.services";
+import { processImg } from "../services/openrouter.services";
 
 
 export interface CreditsRequest extends Request{
@@ -34,6 +36,7 @@ export async function processFile(req: CreditsRequest, res: Response, next: Next
             console.log(file);
             console.log(file.path);
             subject = await ocrScan(file.path);
+            
             req.credits = Number((creditsPerPage.imagePDF * numpages).toFixed(2))
         }
 
@@ -49,6 +52,7 @@ export async function processFile(req: CreditsRequest, res: Response, next: Next
         req.body.subject = subject;
         return next()
     }catch(error){
+        console.error("Error processing file:", error);
         if (error instanceof HttpError) return next(error);
         else return next(new HttpError('An error occurred while processing the file.', 500))
     }

@@ -218,7 +218,7 @@ export async function createQuiz(
 
             if (!questions)
                 throw new HttpError("A problem occurred generating quiz", 500);
-
+            console.log(questions);
             allQuestions.push(...questions.questions);
             groups--;
 

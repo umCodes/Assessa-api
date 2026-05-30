@@ -4,13 +4,14 @@ import { HttpError } from "../errors/http-error";
 
 
 export async function promptLlm(prompt: string) {
+    
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
         method: 'POST',
         headers: {
             Authorization: `Bearer ${openRouterApiKey}`,
         },
         body: JSON.stringify({
-            model: OPEN_ROUTER_MODEL,
+            model: "openai/gpt-oss-120b:free",
             messages: [
             {
                 role: 'user',

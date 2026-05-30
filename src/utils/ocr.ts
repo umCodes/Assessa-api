@@ -6,6 +6,7 @@ import {Poppler} from "node-poppler"
 import pdf from "pdf-parse";
 import { HttpError } from '../errors/http-error';
 import { MAX_CLEARUP_PAGES } from '../constants/constriants.constants';
+import { processImg } from '../services/gemini.services';
 // ---- utility functions ------- 
 function digitCount(num: number){
     return num.toString().length
@@ -52,6 +53,8 @@ async function pdfToImg(filepath: string) {
     };    
 
     await poppler.pdfToCairo(filepath, outputFile + "/image", options);
+    console.log(filepath)
+    await rm(filepath)
     
     return {
         imgRootPath: "uploads/" + folderName,
@@ -70,16 +73,17 @@ function createJobPromises(pages: number, imgRootPath: string){
     
     const imagePath = `image-${imageNumber}.png`
     const fullPath = path.join(process.cwd(), imgRootPath, imagePath);    
-    return scheduler.addJob('recognize', fullPath);
+    // return scheduler.addJob('recognize', fullPath);
+    return processImg(fullPath);
   });  
 }  
 
 
 async function clearUpUploadsFolder(imgsFolder: string){
     
-    const uploadsFolderPath = path.resolve(`./uploads/${imgsFolder}`);
+    
+    const uploadsFolderPath = path.resolve(imgsFolder);
     await rm(uploadsFolderPath, { recursive: true, force: true });
-    await rmdir(`./uploads/${imgsFolder}`)
  }
 
  export async function ocrScan(filepath: string){
@@ -90,12 +94,13 @@ async function clearUpUploadsFolder(imgsFolder: string){
     const promises = createJobPromises(pages, imgRootPath)
     
     const draft  = await Promise.all(promises).catch(async () => {
-      await clearUpUploadsFolder(imgRootPath)
-      throw new HttpError('A problem occurred while scanning your file.', 500);  
+        await clearUpUploadsFolder(imgRootPath)
+        throw new HttpError('A problem occurred while scanning your file.', 500);
     });  
     await clearUpUploadsFolder(imgRootPath)
 
-    return draft.map(d => d.data.text)
+    // return draft.map(d => d.data.text)
+    return draft
 }    
 
 

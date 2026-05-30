@@ -1,4 +1,4 @@
-import { NextFunction, Request, response, Response } from "express";
+import { NextFunction, Response } from "express";
 import { ClearUp, questionTypes, Quiz } from "../models/quiz.types";
 import { HttpError } from "../errors/http-error";
 import { AuthRequest } from "../middlewares/auth-handler.middlewares";
@@ -37,13 +37,13 @@ export async function clearUpPaper(req: AuthRequest & CreditsRequest, res: Respo
         if(!req.credits) throw new HttpError('Something went wrong, please try again.', 500);        
         //- User credits are sufficient to procceed task 
         const credits = req.credits;
-            //Get and validate userbase
-            const usersBase = await getCollection<User>('users');
-            if(!usersBase) throw new HttpError('Could not connect to database', 500)
-            //Check whether user has enough credits for the task 
-            const userCredits = (await usersBase.findOne({_id: new ObjectId(uid)}, {projection: {credits: 1}}))?.credits;
-            if(!userCredits && userCredits !== 0) throw new HttpError('Could not fetch user credits', 500);    
-            if(userCredits < credits) throw new HttpError("Insufficient Credits.", 402)
+        //Get and validate userbase
+        const usersBase = await getCollection<User>('users');
+        if(!usersBase) throw new HttpError('Could not connect to database', 500)
+        //Check whether user has enough credits for the task 
+        const userCredits = (await usersBase.findOne({_id: new ObjectId(uid)}, {projection: {credits: 1}}))?.credits;
+        if(!userCredits && userCredits !== 0) throw new HttpError('Could not fetch user credits', 500);    
+        if(userCredits < credits) throw new HttpError("Insufficient Credits.", 402)
 
     
         //Prompt subject(array of extracted text from file) to llm in parallel(sync) 
@@ -58,7 +58,8 @@ export async function clearUpPaper(req: AuthRequest & CreditsRequest, res: Respo
 
         //Await all the llm responses in parallel
         const response = await Promise.all(request);
-        const questions = response.flatMap(q => {            
+        const questions = response.flatMap(q => {      
+            // console.log(q)      
             //declutter llm response and parse it into a valid json
             const string = String(q).replaceAll('`', '').replaceAll('\n', '').replace('json', '');            
             const parsed = JSON.parse(string)            
@@ -66,6 +67,7 @@ export async function clearUpPaper(req: AuthRequest & CreditsRequest, res: Respo
         })
 
         
+
         if(questions.length <= 0) throw new HttpError("Something went wrong", 400)
 
 
